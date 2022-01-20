@@ -9,3 +9,8 @@
     - Rxswift
   - Pattern
     - MVVM
+- Day 3
+  - 프로젝트 기본 설정
+  - RxSwift 학습
+- Day 4
+  - RxSwift 학습
