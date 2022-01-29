@@ -28,6 +28,14 @@ class NicknameViewController: UIViewController {
         setEvent()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadSavedData()
+    }
+    
+    func loadSavedData() {
+        nicknameView.nicknameTextField.text = UserDefaults.standard.object(forKey: "nick") as? String ?? ""
+    }
+    
     func setEvent() {
         nicknameViewModel.nickname.bind { text in
             self.nicknameView.nicknameTextField.text = text
@@ -75,6 +83,7 @@ class NicknameViewController: UIViewController {
     
     
     @objc func nextButtonClicked() {
+        UserDefaults.standard.set(nicknameViewModel.nickname.value, forKey: "nick")
         self.navigationController?.pushViewController(BirthViewController(), animated: true)
     }
     
@@ -90,7 +99,6 @@ class NicknameViewController: UIViewController {
         }
         
         let isCorrect = checkRegex(text: textField.text ?? "")
-        print(isCorrect)
         if isCorrect {
             setRequestButtonStatus(isEnabled: true)
         } else {
@@ -98,7 +106,7 @@ class NicknameViewController: UIViewController {
         }
 
         nicknameViewModel.nickname.value = textField.text ?? ""
-        
+
     }
 
 }
