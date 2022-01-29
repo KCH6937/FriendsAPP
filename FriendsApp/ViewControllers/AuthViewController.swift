@@ -7,9 +7,9 @@
 
 /*
 Todo:
- - 텍스트필드 '-' 뭔가 문제있음
+ - 텍스트필드 '-' 뭔가 문제있음 -> 해결
  - 에러 처리 등 (Toast Message)
- - 전화번호 형식
+ - 전화번호 형식 -> 해결
  - MVVM 개념에 대해 더 알아보기.. ex) 뷰컨트롤러에서 함수를 실행해서 뷰모델에서 로직을 처리하는 방식 by 강호님
  - 키보드랑 같이 화면 위로 밀어주기.. (모든 화면)
  - 중복코드 다 없애기(전체적으로) -> 설 때 하자..
@@ -48,9 +48,8 @@ class AuthViewController: UIViewController {
             self.authView.numberTextField.text = text
         }
         
+        authView.numberTextField.delegate = self
         authView.requestButton.addTarget(self, action: #selector(requestButtonClicked), for: .touchUpInside)
-        authView.numberTextField.addTarget(self, action: #selector(numberTextFieldDidChange(_:)), for: .editingChanged)
-        
     }
     
     func checkRegex(number: String) -> Bool {
@@ -83,40 +82,6 @@ class AuthViewController: UIViewController {
         
     }
     
-    // bug..
-    @objc func numberTextFieldDidChange(_ textField: UITextField) {
-        guard let text = textField.text else {
-            return
-        }
-        
-        setBorderColor(text: text)
-        
-        if lastString.count > text.count && (lastString.lastIndex(of: "-") != nil)  {
-            lastString = text
-            return
-        }
-        
-        if text.count == 3 {
-            let i = text.index(text.startIndex, offsetBy: 3)
-            textField.text?.insert("-", at: i)
-        } else if text.count == 8 {
-            textField.text?.append("-")
-        } else if text.count > 13 {
-            textField.text?.removeLast()
-        }
-
-        let isCorrect = checkRegex(number: textField.text ?? "")
-        if isCorrect {
-            setRequestButtonStatus(isEnabled: true)
-        } else {
-            setRequestButtonStatus(isEnabled: false)
-        }
-
-        lastString = textField.text ?? ""
-        authViewModel.number.value = textField.text ?? ""
-
-    }
-    
     @objc func requestButtonClicked() {
         authViewModel.getAuthNumber { currentVerificationID, error in
             if let currentVerificationID = currentVerificationID {
@@ -129,9 +94,24 @@ class AuthViewController: UIViewController {
             if let error = error {
                 print(error)
             }
+            
         }
         
     }
 
 }
 
+extension AuthViewController: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        textField.formatPhoneNumber(range: range, string: string)
+        
+        setBorderColor(text: textField.text ?? "")
+        setRequestButtonStatus(isEnabled: checkRegex(number: textField.text ?? ""))
+        
+        authViewModel.number.value = textField.text ?? ""
+        
+        return false
+    }
+    
+}
