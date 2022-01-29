@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseMessaging
 
 class LoginViewModel {
     
@@ -46,6 +47,24 @@ class LoginViewModel {
             
         }
         
+    }
+
+    func getIDToken(completion: @escaping (String?, Error?) -> Void) {
+        let currentUser = Auth.auth().currentUser
+        currentUser?.getIDTokenForcingRefresh(true) { idToken, error in
+            
+            if let idToken = idToken {
+                completion(idToken, nil)
+            }
+            
+            if let error = error {
+                // id 토큰을 못받아왔을 때
+                completion(nil, error)
+                return;
+            }
+            
+        }
+
     }
 
 }
