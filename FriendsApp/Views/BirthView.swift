@@ -14,7 +14,14 @@ class BirthView: UIView, ViewRepresentable {
         $0.frame = CGRect(x: 0, y: 0, width: 0, height: 40)
     }
     
-    let pickerView = UIPickerView()
+    let datePicker = UIDatePicker().then {
+    
+        if #available(iOS 13.4, *) {
+            $0.preferredDatePickerStyle = .wheels
+        }
+        $0.locale = Locale(identifier: "ko-KR")
+        $0.timeZone = .autoupdatingCurrent
+    }
     
     let descriptionLabel = UILabel().then {
         $0.text = "생년월일을 알려주세요"
@@ -114,6 +121,8 @@ class BirthView: UIView, ViewRepresentable {
         $0.spacing = 42
     }
     
+    let date = Date()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -132,13 +141,17 @@ class BirthView: UIView, ViewRepresentable {
     }
     
     func setupView() {
-        yearTextField.inputView = pickerView
-        monthTextField.inputView = pickerView
-        dayTextField.inputView = pickerView
+        let components = Calendar.current.dateComponents([.day, .month, .year], from: date)
+        
         toolBar.isUserInteractionEnabled = true
-        yearTextField.inputAccessoryView = toolBar
-        monthTextField.inputAccessoryView = toolBar
-        dayTextField.inputAccessoryView = toolBar
+        yearTextField.inputAccessoryView = datePicker
+        monthTextField.inputAccessoryView = datePicker
+        dayTextField.inputAccessoryView = datePicker
+        
+        yearTextField.text = "\(components.year!)"
+        monthTextField.text = "\(components.month!)"
+        dayTextField.text = "\(components.day!)"
+
     }
     
     func setupConstraints() {
