@@ -11,5 +11,4 @@ class NicknameViewModel {
     
     var nickname = Observable("")
     
-    
 }
