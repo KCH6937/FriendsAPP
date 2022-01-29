@@ -22,6 +22,7 @@ import UIKit
 class LoginViewController: UIViewController {
     
     var currentVerificationID = ""
+    var idToken = ""
     var phoneNumber = ""
     var timer = Timer()
     var totalSecond = 60
@@ -138,10 +139,49 @@ class LoginViewController: UIViewController {
     
     @objc func authAndStartButtonClicked() {
         loginViewModel.authComplete(currentVerificationID: self.currentVerificationID) { result, error in
-            
+             
             if let result = result {
-                print(result)
-                self.navigationController?.pushViewController(NicknameViewController(), animated: true)
+                self.loginViewModel.getIDToken { idToken, error in
+                    
+                    if let idToken = idToken {
+                        self.idToken = idToken
+                        print(result)
+                        print("idtoken")
+                        print(idToken)
+                        
+                        APIService.shared.getUser(idToken: self.idToken) { code, json in
+                            switch code {
+                            case 200:
+                                print("로그인 성공")
+                                self.navigationController?.pushViewController(HomeViewController(), animated: true)
+                                
+                            case 201:
+                                print("미가입 유저")
+                                self.navigationController?.pushViewController(NicknameViewController(), animated: true)
+                                
+                            case 401:
+                                print("Firebase Token Error")
+                                
+                            case 500:
+                                print("Server Error")
+                                
+                            case 501:
+                                print("client Error")
+                                
+                            default:
+                                print("default error")
+                            }
+                                
+                        }
+                    }
+                    
+                    if let error = error {
+                        // idToken 못받아왔을 때
+                        print(error)
+                    }
+
+                }
+
             }
             
             if let error = error {
@@ -149,6 +189,7 @@ class LoginViewController: UIViewController {
             }
             
         }
+        
     }
     
     @objc func authNumberTextFieldDidChange(_ textField: UITextField) {
@@ -162,13 +203,7 @@ class LoginViewController: UIViewController {
             textField.text?.removeLast()
         }
         
-        let isCorrect = checkRegex(number: textField.text ?? "")
-        if isCorrect {
-            setRequestButtonStatus(isEnabled: true)
-        } else {
-            setRequestButtonStatus(isEnabled: false)
-        }
-
+        setRequestButtonStatus(isEnabled: checkRegex(number: textField.text ?? ""))
         loginViewModel.authNumber.value = textField.text ?? ""
         
     }
