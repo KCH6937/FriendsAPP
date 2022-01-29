@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct EndPoint {
+    static let url = "http://test.monocoding.com:35484"
+}
