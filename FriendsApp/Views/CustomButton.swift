@@ -57,3 +57,10 @@ final class CustomButton: BaseButton {
         }
     }
 }
+
+
+var typeBool:Bool = true
+
+var maleTap = typeBool
+
+var femaleTap = !typeBool
