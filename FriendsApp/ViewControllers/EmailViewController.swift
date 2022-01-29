@@ -23,6 +23,14 @@ class EmailViewController: UIViewController {
         setEvent()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadSavedData()
+    }
+    
+    func loadSavedData() {
+        emailView.emailTextField.text = UserDefaults.standard.object(forKey: "email") as? String ?? ""
+    }
+    
     func setEvent() {
         emailViewModel.email.bind { text in
             self.emailView.emailTextField.text = text
@@ -64,6 +72,7 @@ class EmailViewController: UIViewController {
     }
     
     @objc func nextButtonClicked() {
+        UserDefaults.standard.set(emailViewModel.email.value, forKey: "email")
         self.navigationController?.pushViewController(GenderViewController(), animated: true)
     }
     
