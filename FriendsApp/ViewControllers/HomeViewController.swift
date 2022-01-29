@@ -12,5 +12,15 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray
+        
+        removeUserDefaultsData()
     }
+    
+    func removeUserDefaultsData() {
+        UserDefaults.standard.removeObject(forKey: "nick")
+        UserDefaults.standard.removeObject(forKey: "birth")
+        UserDefaults.standard.removeObject(forKey: "email")
+        UserDefaults.standard.removeObject(forKey: "gender")
+    }
+    
 }
