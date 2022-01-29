@@ -23,6 +23,20 @@ class GenderViewController: UIViewController {
         setEvent()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadSavedData()
+    }
+    
+    func loadSavedData() {
+        genderViewModel.gender.value = UserDefaults.standard.object(forKey: "gender") as? Int ?? -1
+        if genderViewModel.gender.value == 0 {
+            manButtonClicked()
+        } else if genderViewModel.gender.value == 1 {
+            womanButtonClicked()
+        }
+        
+    }
+    
     func setEvent() {
         genderView.manButton.addTarget(self, action: #selector(manButtonClicked), for: .touchUpInside)
         genderView.womanButton.addTarget(self, action: #selector(womanButtonClicked), for: .touchUpInside)
@@ -30,23 +44,32 @@ class GenderViewController: UIViewController {
     }
     
     @objc func manButtonClicked() {
-        genderView.manButton.backgroundColor = .whiteGreen()
-        genderView.manButton.layer.borderWidth = 0
-        genderView.womanButton.setButton(type: .inactive, title: "여자", font: UIFont.notoSansRegular(ofSize: 16))
-        genderViewModel.gender.value = 0
+        if genderViewModel.gender.value == 0 {
+            genderView.manButton.setButton(type: .inactive, title: "남자", font: UIFont.notoSansRegular(ofSize: 16))
+            genderViewModel.gender.value = -1
+        } else {
+            genderView.manButton.backgroundColor = .whiteGreen()
+            genderView.manButton.layer.borderWidth = 0
+            genderView.womanButton.setButton(type: .inactive, title: "여자", font: UIFont.notoSansRegular(ofSize: 16))
+            genderViewModel.gender.value = 0
+        }
     }
     
     @objc func womanButtonClicked() {
-        genderView.womanButton.backgroundColor = .whiteGreen()
-        genderView.womanButton.layer.borderWidth = 0
-        genderView.manButton.setButton(type: .inactive, title: "남자", font: UIFont.notoSansRegular(ofSize: 16))
-        genderViewModel.gender.value = 1
+        if genderViewModel.gender.value == 1 {
+            genderView.womanButton.setButton(type: .inactive, title: "여자", font: UIFont.notoSansRegular(ofSize: 16))
+            genderViewModel.gender.value = -1
+        } else {
+            genderView.womanButton.backgroundColor = .whiteGreen()
+            genderView.womanButton.layer.borderWidth = 0
+            genderView.manButton.setButton(type: .inactive, title: "남자", font: UIFont.notoSansRegular(ofSize: 16))
+            genderViewModel.gender.value = 1
+        }
     }
     
     @objc func nextButtonClicked() {
+        UserDefaults.standard.set(genderViewModel.gender.value, forKey: "gender")
         self.navigationController?.pushViewController(HomeViewController(), animated: true)
     }
-    
-
     
 }
