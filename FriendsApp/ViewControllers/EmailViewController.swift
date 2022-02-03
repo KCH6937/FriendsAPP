@@ -29,9 +29,16 @@ class EmailViewController: UIViewController {
     
     func loadSavedData() {
         emailView.emailTextField.text = UserDefaults.standard.object(forKey: "email") as? String ?? ""
+        if emailView.emailTextField.text == "" {
+            setRequestButtonStatus(isEnabled: false)
+        } else {
+            setRequestButtonStatus(isEnabled: true)
+        }
     }
     
     func setEvent() {
+        emailView.emailTextField.becomeFirstResponder()
+        
         emailViewModel.email.bind { text in
             self.emailView.emailTextField.text = text
         }

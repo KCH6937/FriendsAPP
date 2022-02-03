@@ -67,7 +67,7 @@ extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         let dataDict: [String: String?] = ["token": fcmToken]
         
-        UserDefaults.standard.set(fcmToken, forKey: "FCMtoken")
+        UserDefaults.standard.set(fcmToken ?? "", forKey: "FCMtoken")
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
     }
 

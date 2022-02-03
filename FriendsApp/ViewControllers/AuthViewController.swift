@@ -83,7 +83,9 @@ class AuthViewController: UIViewController {
     }
     
     @objc func requestButtonClicked() {
+        
         authViewModel.getAuthNumber { currentVerificationID, error in
+            
             if let currentVerificationID = currentVerificationID {
                 let loginViewController = LoginViewController()
                 loginViewController.currentVerificationID = currentVerificationID

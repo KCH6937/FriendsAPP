@@ -15,10 +15,10 @@ class BirthView: UIView, ViewRepresentable {
     }
     
     let datePicker = UIDatePicker().then {
-    
         if #available(iOS 13.4, *) {
             $0.preferredDatePickerStyle = .wheels
         }
+        $0.datePickerMode = .date
         $0.locale = Locale(identifier: "ko-KR")
         $0.timeZone = .autoupdatingCurrent
     }
@@ -49,27 +49,27 @@ class BirthView: UIView, ViewRepresentable {
     }
     
     let yearTextField = UITextField().then {
-        $0.placeholder = "1990"
-        $0.backgroundColor = .white
+        $0.placeholder = "1900"
         $0.textColor = .black
         $0.font = UIFont.notoSansRegular(ofSize: 14)
-        $0.tintColor = .clear
     }
     
-    let monthTextField = UITextField().then {
-        $0.placeholder = "1"
-        $0.backgroundColor = .white
-        $0.textColor = .black
+    let yearValueLabel = UILabel().then {
+        $0.text = "1990"
+        $0.textColor = .gray7()
         $0.font = UIFont.notoSansRegular(ofSize: 14)
-        $0.tintColor = .clear
     }
     
-    let dayTextField = UITextField().then {
-        $0.placeholder = "1"
-        $0.backgroundColor = .white
-        $0.textColor = .black
+    let monthValueLabel = UILabel().then {
+        $0.text = "1"
+        $0.textColor = .gray7()
         $0.font = UIFont.notoSansRegular(ofSize: 14)
-        $0.tintColor = .clear
+    }
+    
+    let dayValueLabel = UILabel().then {
+        $0.text = "1"
+        $0.textColor = .gray7()
+        $0.font = UIFont.notoSansRegular(ofSize: 14)
     }
     
     let yearBorder = UIView().then {
@@ -132,8 +132,6 @@ class BirthView: UIView, ViewRepresentable {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         yearTextField.resignFirstResponder()
-        monthTextField.resignFirstResponder()
-        dayTextField.resignFirstResponder()
     }
     
     required init?(coder: NSCoder) {
@@ -141,20 +139,15 @@ class BirthView: UIView, ViewRepresentable {
     }
     
     func setupView() {
-        let components = Calendar.current.dateComponents([.day, .month, .year], from: date)
-        
         toolBar.isUserInteractionEnabled = true
-        yearTextField.inputAccessoryView = datePicker
-        monthTextField.inputAccessoryView = datePicker
-        dayTextField.inputAccessoryView = datePicker
+        yearTextField.inputAccessoryView = toolBar
+        yearTextField.inputView = datePicker
+        yearTextField.isHidden = true
         
-        yearTextField.text = "\(components.year!)"
-        monthTextField.text = "\(components.month!)"
-        dayTextField.text = "\(components.day!)"
-
     }
     
     func setupConstraints() {
+        self.addSubview(yearTextField)
         
         self.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints {
@@ -162,24 +155,24 @@ class BirthView: UIView, ViewRepresentable {
             $0.centerX.equalTo(self.safeAreaLayoutGuide)
         }
         
-        [yearTextField, yearLabel].forEach {
+        [yearValueLabel, yearLabel].forEach {
             yearStackView.addArrangedSubview($0)
         }
-        yearTextField.snp.makeConstraints {
+        yearValueLabel.snp.makeConstraints {
             $0.width.equalTo(32)
         }
         
-        [monthTextField, monthLabel].forEach {
+        [monthValueLabel, monthLabel].forEach {
             monthStackView.addArrangedSubview($0)
         }
-        monthTextField.snp.makeConstraints {
+        monthValueLabel.snp.makeConstraints {
             $0.width.equalTo(16)
         }
         
-        [dayTextField, dayLabel].forEach {
+        [dayValueLabel, dayLabel].forEach {
             dayStackView.addArrangedSubview($0)
         }
-        dayTextField.snp.makeConstraints {
+        dayValueLabel.snp.makeConstraints {
             $0.width.equalTo(16)
         }
         

@@ -9,9 +9,7 @@ import Foundation
 
 class BirthViewModel {
     
-    var year = Observable(0)
-    var month = Observable(0)
-    var day = Observable(0)
+   var date = Observable("")
     
     
 }

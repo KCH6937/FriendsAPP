@@ -12,7 +12,7 @@ class BirthViewController: UIViewController {
     let birthView = BirthView()
     let birthViewModel = BirthViewModel()
     
-    let date = Date()
+    var date = ""
     
     override func loadView() {
         self.view = birthView
@@ -31,21 +31,22 @@ class BirthViewController: UIViewController {
     }
     
     func loadSavedData() {
-        
     }
     
     func setEvent() {
+        let stackViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(selectBirth))
+        birthView.dateStackView.addGestureRecognizer(stackViewTapGesture)
         birthView.datePicker.addTarget(self, action: #selector(handleDatePicker(_:)), for: .valueChanged)
         birthView.nextButton.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
     }
     
     func setPickerView() {
-        let nextFieldButton = UIBarButtonItem(title: "다음", style: .plain, target: self, action: #selector(nextFieldButtonClicked))
-        nextFieldButton.tintColor = .green
+        let completeButton = UIBarButtonItem(title: "완료", style: .plain, target: self, action: #selector(completeButtonClicked))
+        completeButton.tintColor = .green()
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         
-        birthView.toolBar.setItems([flexSpace,nextFieldButton], animated: true)
+        birthView.toolBar.setItems([flexSpace, completeButton], animated: true)
         
     }
     
@@ -65,17 +66,15 @@ class BirthViewController: UIViewController {
         guard number.range(of: regex, options: .regularExpression) != nil else {
             return false
         }
+        
         return true
         
     }
     
-    func setBorderColor(text: String, border: UIView) {
-        if text != "" {
-            border.backgroundColor = .focus()
-        } else {
-            border.backgroundColor = .gray3()
-        }
-        
+    func setContentColor() {
+        birthView.yearValueLabel.textColor = .black
+        birthView.monthValueLabel.textColor = .black
+        birthView.dayValueLabel.textColor = .black
     }
     
     func setRequestButtonStatus(isEnabled: Bool) {
@@ -89,72 +88,44 @@ class BirthViewController: UIViewController {
         
     }
     
+    @objc func selectBirth() {
+        print(#function)
+
+        birthView.yearTextField.becomeFirstResponder()
+        
+        birthView.datePicker.isSelected = true
+        birthView.datePicker.isHighlighted = true
+        
+    }
+    
     @objc func handleDatePicker(_ sender: UIDatePicker) {
+        setContentColor()
+        
+        let yearFormatter = DateFormatter()
+        let monthFormatter = DateFormatter()
+        let dayFormatter = DateFormatter()
+        let dateFormatter = DateFormatter()
+        
+        yearFormatter.dateFormat = "yyyy"
+        monthFormatter.dateFormat = "M"
+        dayFormatter.dateFormat = "d"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        
+        birthView.yearValueLabel.text = yearFormatter.string(from: sender.date)
+        birthView.monthValueLabel.text = monthFormatter.string(from: sender.date)
+        birthView.dayValueLabel.text = dayFormatter.string(from: sender.date)
+        
+        date = dateFormatter.string(from: sender.date)
         
     }
     
     @objc func nextButtonClicked() {
-        UserDefaults.standard.set("value", forKey: "birth")
+        UserDefaults.standard.set(date, forKey: "birth")
         self.navigationController?.pushViewController(EmailViewController(), animated: true)
     }
     
-    @objc func nextFieldButtonClicked() {
-        if birthView.yearTextField.isEditing {
-            birthView.yearTextField.resignFirstResponder()
-            birthView.monthTextField.becomeFirstResponder()
-            
-        } else if birthView.monthTextField.isEditing {
-            birthView.monthTextField.resignFirstResponder()
-            birthView.dayTextField.becomeFirstResponder()
-            
-        } else if birthView.dayTextField.isEditing {
-            birthView.dayTextField.resignFirstResponder()
-        }
-        
+    @objc func completeButtonClicked() {
+        birthView.yearTextField.resignFirstResponder()
     }
     
 }
-
-//extension BirthViewController: UIDAte {
-//    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-//        return 1
-//    }
-//
-//    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        if birthView.yearTextField.isEditing {
-//            return "\(year[row])년"
-//        } else if birthView.monthTextField.isEditing {
-//            return "\(month[row])월"
-//        } else if birthView.dayTextField.isEditing {
-//            return "\(day[row])일"
-//        } else {
-//            return ""
-//        }
-//
-//    }
-//
-//    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        if birthView.yearTextField.isEditing {
-//            return year.count
-//        } else if birthView.monthTextField.isEditing {
-//            return month.count
-//        } else if birthView.dayTextField.isEditing {
-//            return day.count
-//        } else {
-//            return 0
-//        }
-//
-//    }
-//
-//    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-//        if birthView.yearTextField.isEditing {
-//            birthViewModel.year.value = year[row]
-//        } else if birthView.monthTextField.isEditing {
-//            birthViewModel.month.value = month[row]
-//        } else if birthView.dayTextField.isEditing {
-//            birthViewModel.day.value = day[row]
-//        }
-//
-//    }
-//
-//}

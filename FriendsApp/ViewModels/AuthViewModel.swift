@@ -14,8 +14,9 @@ class AuthViewModel {
     
     func getAuthNumber(completion: @escaping (String?, Error?) -> Void) {
         var currentVerificationID = ""
+        let nationCode = "+82"
         
-        PhoneAuthProvider.provider().verifyPhoneNumber("+82 \(number.value)", uiDelegate: nil) { (verificationID, error) in
+        PhoneAuthProvider.provider().verifyPhoneNumber("\(nationCode) \(number.value)", uiDelegate: nil) { (verificationID, error) in
             if let error = error {
                 print(error.localizedDescription)
                 completion(nil, error)

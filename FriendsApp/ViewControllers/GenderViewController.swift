@@ -29,12 +29,15 @@ class GenderViewController: UIViewController {
     
     func loadSavedData() {
         genderViewModel.gender.value = UserDefaults.standard.object(forKey: "gender") as? Int ?? -1
-        if genderViewModel.gender.value == 0 {
-            manButtonClicked()
-        } else if genderViewModel.gender.value == 1 {
-            womanButtonClicked()
-        }
         
+        print(UserDefaults.standard.object(forKey: "gender"))
+        if genderViewModel.gender.value == 0 {
+            genderView.manButton.backgroundColor = .whiteGreen()
+            genderView.manButton.layer.borderWidth = 0
+        } else if genderViewModel.gender.value == 1 {
+            genderView.womanButton.backgroundColor = .whiteGreen()
+            genderView.womanButton.layer.borderWidth = 0
+        }
     }
     
     func setEvent() {
@@ -53,6 +56,9 @@ class GenderViewController: UIViewController {
             genderView.womanButton.setButton(type: .inactive, title: "여자", font: UIFont.notoSansRegular(ofSize: 16))
             genderViewModel.gender.value = 0
         }
+        
+        UserDefaults.standard.set(genderViewModel.gender.value, forKey: "gender")
+        
     }
     
     @objc func womanButtonClicked() {
@@ -65,11 +71,44 @@ class GenderViewController: UIViewController {
             genderView.manButton.setButton(type: .inactive, title: "남자", font: UIFont.notoSansRegular(ofSize: 16))
             genderViewModel.gender.value = 1
         }
+        
+        UserDefaults.standard.set(genderViewModel.gender.value, forKey: "gender")
+        
     }
     
     @objc func nextButtonClicked() {
-        UserDefaults.standard.set(genderViewModel.gender.value, forKey: "gender")
-        self.navigationController?.pushViewController(HomeViewController(), animated: true)
+        APIService.shared.signInUser(idToken: UserDefaults.standard.object(forKey: "idToken") as? String ?? "") { code, json in
+            
+            switch code {
+            case 200:
+                print("회원가입 성공")
+                self.navigationController?.pushViewController(HomeViewController(), animated: true)
+                
+            case 201:
+                print("이미가입 유저")
+                
+            case 202:
+                print("사용할수 없는 닉네임")
+                // to NicknameViewController
+                self.navigationController?.popViewController(animated: true)
+                self.navigationController?.popViewController(animated: true)
+                self.navigationController?.popViewController(animated: true)
+            case 401:
+                print("firebase token error")
+                
+            case 500:
+                print("server Error")
+                
+            case 501:
+                print("client error")
+                
+            default:
+                print("default error")
+                
+            }
+            
+        }
     }
+       
     
 }

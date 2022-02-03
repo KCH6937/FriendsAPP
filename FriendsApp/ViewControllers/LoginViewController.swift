@@ -47,6 +47,7 @@ class LoginViewController: UIViewController {
     }
 
     func setEvent() {
+        
         loginViewModel.authNumber.bind { text in
             self.loginView.authNumberTextField.text = text
         }
@@ -116,6 +117,13 @@ class LoginViewController: UIViewController {
         
     }
     
+    func removeUserDefaultsData() {
+        UserDefaults.standard.removeObject(forKey: "nick")
+        UserDefaults.standard.removeObject(forKey: "birth")
+        UserDefaults.standard.removeObject(forKey: "email")
+        UserDefaults.standard.removeObject(forKey: "gender")
+    }
+    
     @objc func backButtonClicked() {
         self.navigationController?.popViewController(animated: true)
     }
@@ -141,6 +149,20 @@ class LoginViewController: UIViewController {
         loginViewModel.authComplete(currentVerificationID: self.currentVerificationID) { result, error in
              
             if let result = result {
+                let postNumber = UserDefaults.standard.object(forKey: "phoneNumber") as? String ?? ""
+                let numberIdx: String.Index = self.phoneNumber.firstIndex(of: "1")!
+                let number = "+82\(self.phoneNumber[numberIdx...].replacingOccurrences(of: "-", with: ""))"
+                
+                if postNumber != number {
+                    print("틀림")
+                    self.removeUserDefaultsData()
+                }
+                
+                print("number")
+                print(number)
+                
+                UserDefaults.standard.set(number, forKey: "phoneNumber")
+                
                 self.loginViewModel.getIDToken { idToken, error in
                     
                     if let idToken = idToken {
@@ -149,13 +171,15 @@ class LoginViewController: UIViewController {
                         print("idtoken")
                         print(idToken)
                         
+                        UserDefaults.standard.set(idToken, forKey: "idtoken")
+                        
                         APIService.shared.getUser(idToken: self.idToken) { code, json in
                             switch code {
                             case 200:
                                 print("로그인 성공")
                                 self.navigationController?.pushViewController(HomeViewController(), animated: true)
                                 
-                            case 201:
+                            case 406:
                                 print("미가입 유저")
                                 self.navigationController?.pushViewController(NicknameViewController(), animated: true)
                                 
@@ -171,8 +195,9 @@ class LoginViewController: UIViewController {
                             default:
                                 print("default error")
                             }
-                                
+                            
                         }
+                        
                     }
                     
                     if let error = error {

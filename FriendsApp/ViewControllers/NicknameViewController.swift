@@ -34,9 +34,16 @@ class NicknameViewController: UIViewController {
     
     func loadSavedData() {
         nicknameView.nicknameTextField.text = UserDefaults.standard.object(forKey: "nick") as? String ?? ""
+        if nicknameView.nicknameTextField.text == "" {
+            setRequestButtonStatus(isEnabled: false)
+        } else {
+            setRequestButtonStatus(isEnabled: true)
+        }
     }
     
     func setEvent() {
+        nicknameView.nicknameTextField.becomeFirstResponder()
+        
         nicknameViewModel.nickname.bind { text in
             self.nicknameView.nicknameTextField.text = text
         }
@@ -47,7 +54,7 @@ class NicknameViewController: UIViewController {
     }
     
     func checkRegex(text: String) -> Bool {
-        let regex = "^([0-9a-zA-Z~!@#\\$%\\^&\\*]{1,10})$"
+        let regex = "^.{1,10}$"
 
 
         guard text.range(of: regex, options: .regularExpression) != nil else {
