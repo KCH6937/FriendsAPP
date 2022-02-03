@@ -22,6 +22,7 @@ class APIService {
             switch response.result {
                 
             case .success:
+                print("너뭐하닞")
                 let code = response.response?.statusCode ?? 500 // statuscode가 nil일 떄 500
                 result(code, nil)
                 
@@ -37,7 +38,15 @@ class APIService {
     func signInUser(idToken: String, result: @escaping CompletionHandler) {
         let httpHeaders = HTTPHeaders.init([HTTPHeader(name: "idtoken", value: idToken)])
         
-        var parameters: [String: Any] = [
+        
+        print(UserDefaults.standard.object(forKey: "phoneNumber") as! String)
+        print(UserDefaults.standard.object(forKey: "FCMtoken") as! String)
+        print(UserDefaults.standard.object(forKey: "nick") as! String)
+        print(UserDefaults.standard.object(forKey: "birth") as! String)
+        print(UserDefaults.standard.object(forKey: "email") as! String)
+        print(UserDefaults.standard.object(forKey: "gender") as! Int)
+        
+        let parameters: [String: Any] = [
             "phoneNumber": UserDefaults.standard.object(forKey: "phoneNumber") as! String,
             "FCMtoken": UserDefaults.standard.object(forKey: "FCMtoken") as! String,
             "nick": UserDefaults.standard.object(forKey: "nick") as! String,
@@ -46,7 +55,7 @@ class APIService {
             "gender": UserDefaults.standard.object(forKey: "gender") as! Int
         ]
         
-        AF.request("\(EndPoint.url)/user", method: .post, headers: httpHeaders).validate(statusCode: 200...501).response { response in
+        AF.request("\(EndPoint.url)/user", method: .post, parameters: parameters, headers: httpHeaders).validate(statusCode: 200...501).response { response in
             switch response.result {
                 
             case .success:
